@@ -8,7 +8,7 @@ services:
     type: web
     runtime: static
     buildCommand: npm install && npm run generate
-    # Relative to the repo root, not to rootDir.
+    # Relative to rootDir, which defaults to the repo root.
     staticPublishPath: ./.output/public
 
     routes:

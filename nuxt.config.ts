@@ -11,6 +11,15 @@ export default defineNuxtConfig({
     },
   },
 
+  nitro: {
+    prerender: {
+      // Docus crawls links while prerendering. `/form` belongs to the docs
+      // deployment behind a rewrite, so crawling it here would only log a 404
+      // for a route this app deliberately does not serve.
+      ignore: ['/form'],
+    },
+  },
+
   content: {
     build: {
       markdown: {

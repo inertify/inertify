@@ -9,7 +9,8 @@ const packages = usePackages()
       :key="pkg.id"
       spotlight
       :to="pkg.to"
-      :target="pkg.to ? '_blank' : undefined"
+      :target="pkg.to?.startsWith('http') ? '_blank' : undefined"
+      external
       :title="pkg.name"
       :description="pkg.description"
       :ui="{ container: 'min-w-0' }"

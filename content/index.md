@@ -301,12 +301,12 @@ Inertify Form is the package you can install today. Table and Modal are still in
   :::u-button
   ---
   color: primary
-  icon: i-simple-icons-github
+  external: true
+  icon: i-lucide-book-open
   size: xl
-  target: _blank
-  to: https://github.com/inertify/form
+  to: /form
   ---
-  Inertify Form on GitHub
+  Read the documentation
   :::
 
   :::u-button

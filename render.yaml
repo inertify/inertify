@@ -12,17 +12,20 @@ services:
     staticPublishPath: ./.output/public
 
     routes:
-      # /form is the Inertify Form docs, deployed as its own static service.
-      # Render's `*` matches from the position it appears in, so `/form/*` never
-      # matches a bare `/form` — without this redirect that path falls through
-      # to this site's filesystem and 404s.
-      - type: redirect
-        source: /form
-        destination: /form/
-
-      # The docs app is built with app.baseURL = '/form/', so its HTML already
+      # /form is the Inertify Form docs, deployed as its own static service. The
+      # docs app is built with app.baseURL = '/form/', so its HTML already
       # references /form/… while its files sit flat at the target's root. The
-      # proxy strips the prefix, which is why the destination has no /form.
+      # proxy strips the prefix, which is why the destinations carry no /form.
+      #
+      # Two rules because `/form/*` does not match a bare `/form`, which would
+      # otherwise fall through to this site's filesystem and 404. This cannot be
+      # a `/form` → `/form/` redirect: Render matches those two as the same path,
+      # so the rule fires on its own destination and loops. Serving both through
+      # a rewrite is safe — the docs pages carry canonical tags pointing at the
+      # slashed URL. Deep links are unaffected; matching is not prefix-based.
+      - type: rewrite
+        source: /form
+        destination: https://form-k94j.onrender.com/
       - type: rewrite
         source: /form/*
         destination: https://form-k94j.onrender.com/*

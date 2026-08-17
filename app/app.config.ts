@@ -3,6 +3,12 @@ export default defineAppConfig({
     locale: 'en',
   },
 
+  // Full-text search over the imported documentation, as the standalone docs
+  // deployment had. AppHeader renders the trigger on documentation pages.
+  search: {
+    fts: true,
+  },
+
   seo: {
     titleTemplate: '%s · Inertify',
     title: 'Inertify',
@@ -19,26 +25,38 @@ export default defineAppConfig({
     },
   },
 
+  // Docus builds the "Edit this page" link of a documentation page from this,
+  // and those pages are imported from the Form repository — hence the package
+  // repository rather than the organization. AppHeader and the footer link here
+  // too, so the GitHub icon follows it.
   github: {
-    url: 'https://github.com/inertify',
+    url: 'https://github.com/inertify/form',
     branch: 'main',
+    rootDir: 'docs',
   },
 
-  // In-page navigation rendered by AppHeaderCenter and AppHeaderBody. The site
-  // is a single landing page, so every entry is a section anchor.
+  // In-page navigation rendered by AppHeaderCenter and AppHeaderBody. Apart from
+  // the documentation, the site is a single landing page, so the other entries
+  // are section anchors.
   navigation: {
+    // Every documentation page hangs under /form, so without this the sidebar
+    // would indent all of it below a "Form" root and truncate the labels. In
+    // this mode that root becomes a section link above the sidebar instead, and
+    // the sidebar shows the section's own tree — which is also how a second
+    // package's documentation would slot in.
+    sub: 'aside',
+
     links: [
-      { label: 'Packages', to: '#packages' },
-      // `/form` is served by the docs deployment through a Render rewrite, so
-      // it is not a route in this app: `external` forces a document navigation
-      // instead of a client-side one that would hit this app's 404.
-      { label: 'Inertify Form', to: '/form/', external: true },
-      { label: 'Approach', to: '#approach' },
+      { label: 'Packages', to: '/#packages' },
+      // The first documentation page rather than /form, which only exists as a
+      // server-side redirect and would 404 on a client-side navigation.
+      { label: 'Inertify Form', to: '/form/getting-started/installation' },
+      // { label: 'Approach', to: '/#approach' },
     ],
   },
 
-  // Single source of truth for the package family. PackageGrid renders the
-  // packages section from it.
+  // Single source of truth for the package family. PackageRows renders the
+  // packages section from it, one row per entry.
   packages: [
     {
       id: 'form',
@@ -56,7 +74,7 @@ export default defineAppConfig({
         'Native, temporary, chunked, and direct uploads',
         'Renderless Vue engine with typed composables',
       ],
-      to: '/form/',
+      to: '/form/getting-started/installation',
     },
     {
       id: 'table',
@@ -119,9 +137,9 @@ export default defineAppConfig({
     pageHero: {
       slots: {
         title: 'font-semibold sm:text-6xl',
-        // Tighter than the theme default so the hero sits closer to the header
-        // and to the first section.
-        container: 'py-12 sm:py-16 lg:py-20',
+        // Tighter than the theme default (py-24/32/40) so the hero sits closer
+        // to the header and to the first section.
+        container: 'py-16 sm:py-20 lg:py-28',
       },
     },
     pageSection: {

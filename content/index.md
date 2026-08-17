@@ -5,8 +5,11 @@ seo:
 ---
 
 ::u-page-hero
+#top
+:hero-background
+
 #title
-[Laravel]{.text-primary} owns behavior. :br Your app owns the [UI.]{.text-primary}
+[Laravel]{.text-primary} owns behavior. :br [Your app owns the]{.text-muted} :underline-word[UI.]
 
 #description
 Inertify is a family of headless, schema-driven packages for Laravel, Inertia, and Vue. :br Declare behavior once on the server, then render it with your own components and design system.
@@ -14,30 +17,25 @@ Inertify is a family of headless, schema-driven packages for Laravel, Inertia, a
 #links
   :::u-button
   ---
-  color: neutral
+  aria-label: See the packages
+  class: animate-bounce motion-reduce:animate-none
+  color: primary
+  icon: i-lucide-arrow-down
   size: xl
   to: "#packages"
-  trailing-icon: i-lucide-arrow-down
+  ui:
+    leadingIcon: size-8
+  variant: ghost
   ---
-  See the packages
   :::
 
 #headline
-  :::div{.flex.flex-col.items-center.gap-4}
-    ::::u-button
-    ---
-    color: neutral
-    icon: i-lucide-box
-    size: sm
-    to: "#packages"
-    variant: outline
-    ---
-    Laravel + Inertia + Vue
-    ::::
+  :::hero-eyebrow{to="https://github.com/inertify"}
+  Open source · MIT licensed
   :::
 ::
 
-::u-page-section
+<!-- ::u-page-section
 ---
 id: packages
 class: scroll-mt-24
@@ -47,167 +45,117 @@ Three packages, one contract
 
 #description
 Every Inertify package serializes server-owned behavior into an Inertia property and hands it to a typed Vue engine. None of them ship CSS, a Tailwind preset, icons, or ready-made components.
+:: -->
 
-#default
-:package-grid
-::
+::package-rows
+#form
+  :::hero-form-showcase
+  #php
+  ```php
+  <?php
 
-::u-page-section
----
-id: form
-class: scroll-mt-24
-headline: Available today
----
-#title
-Inside [Inertify Form]{.text-primary}
+  namespace App\Forms;
 
-#description
-The first package covers the whole form lifecycle: schema, authorization, validation, binding, uploads, collections, and wizards. Two installs — a Laravel package and a Vue package — behind one form contract.
+  use Inertify\Form\Fields\Checkbox;
+  use Inertify\Form\Fields\Combobox;
+  use Inertify\Form\Fields\Fieldset;
+  use Inertify\Form\Fields\File;
+  use Inertify\Form\Fields\Radio;
+  use Inertify\Form\Fields\TextInput;
+  use Inertify\Form\Fields\Toggle;
+  use Inertify\Form\Form;
 
-#default
-  :::u-page-grid
-    ::::u-page-card
-    ---
-    spotlight: true
-    class: col-span-2
-    ---
-    ```php [app/Forms/ProfileForm.php]
-    final class ProfileForm extends Form
-    {
-        public function fields(): array
-        {
-            return [
-                TextInput::make('name', 'Name')
-                    ->required()
-                    ->precognitive(),
-                Combobox::make('skill', 'Primary skill')
-                    ->source(route('skills.index'))
-                    ->searchable(),
-                File::make('avatar', 'Avatar')
-                    ->image()
-                    ->maxSize(5 * 1024),
-                TextInput::make('company', 'Company')
-                    ->visibleWhen('is_employed', true)
-                    ->clearWhenHidden(),
-            ];
-        }
-    }
-    ```
+  final class ProfileForm extends Form
+  {
+      public function fields(): array
+      {
+          return [
+              Fieldset::make()
+                  ->id('main')
+                  ->fields([
+                      File::make('avatar', 'Avatar')
+                          ->image()
+                          ->maxSize(5 * 1024),
+                      TextInput::make('name', 'Name')
+                          ->required()
+                          ->precognitive(),
+                      TextInput::make('email', 'Email')
+                          ->email()
+                          ->required()
+                          ->precognitive(),
+                      Combobox::make('skill', 'Primary skill')
+                          ->source(route('skills.index'))
+                          ->searchable()
+                          ->preload()
+                          ->required(),
+                      TextInput::make('company', 'Company')
+                          ->visibleWhen('is_employed', true)
+                          ->clearWhenHidden(),
+                  ]),
+              Fieldset::make()
+                  ->id('extra')
+                  ->fields([
+                      Radio::make('work_mode', 'Preferred work mode')
+                          ->options([
+                              'remote' => 'Remote',
+                              'hybrid' => 'Hybrid',
+                              'office' => 'Office',
+                          ])
+                          ->default('remote'),
+                      Checkbox::make('is_employed', 'Currently employed')
+                          ->default(true),
+                      Toggle::make('notifications', 'Project notifications')
+                          ->default(true),
+                  ]),
+          ];
+      }
+  }
+  ```
 
-    #title
-    Schema lives in PHP
+  #vue
+  ```vue
+  <script setup lang="ts">
+  import {
+    Form,
+    FormFieldsets,
+    FormSubmit,
+    type FormResource,
+  } from '@inertify/form-vue'
+  import { FormField, FormFields } from '@/components/form'
+  import Button from '@/components/ui/Button.vue'
+  import Card from '@/components/ui/Card.vue'
 
-    #description
-    Forms are container-resolved classes. Fields, rules, defaults, visibility, binding, routes, and upload behavior are declared once and serialized as functional metadata only.
-    ::::
+  defineProps<{ form: FormResource }>()
+  </script>
 
-    ::::u-page-card
-    ---
-    spotlight: true
-    class: col-span-2 lg:col-span-1
-    ---
-      :::::div{.flex.flex-1.items-center.justify-center.py-12}
-      :u-icon{name="i-lucide-list-tree" class="size-24 text-primary"}
-      :::::
+  <template>
+    <Form :form="form" v-slot="{ form: api, processing, canSubmit }">
+      <Card class="space-y-5">
+        <FormField name="avatar" />
 
-    #title
-    A field for the job
+        <FormFieldsets v-slot="{ id, fieldset }">
+            <section
+              :class="id === 'main'
+                ? 'grid gap-4 sm:grid-cols-2'
+                : 'space-y-4'"
+            >
+              <FormFields
+                :fieldset="fieldset"
+                except="avatar"
+              />
+          </section>
+        </FormFieldsets>
 
-    #description
-    Text and structured input, choices, dates, colors and sliders, files, rich text, repeaters, typed blocks, key-value pairs, fieldsets, and submits.
-    ::::
-
-    ::::u-page-card
-    ---
-    spotlight: true
-    class: col-span-2 lg:col-span-1
-    ---
-      :::::div{.flex.flex-1.items-center.justify-center.py-12}
-        ::::::div{.relative.flex.size-28.items-center.justify-center.rounded-full.bg-primary/10}
-        :u-icon{name="i-lucide-shield-check" class="size-14 text-primary"}
-
-          :::::::div{.absolute.-right-3.-top-2.flex.size-9.items-center.justify-center.rounded-full.border.border-default.bg-default.shadow-sm}
-          :u-icon{name="i-lucide-check" class="size-4 text-primary"}
-          :::::::
-        ::::::
-      :::::
-
-    #title
-    Authorization stays structural
-
-    #description
-    Unauthorized fields disappear from schema, initial data, and validation rules together instead of being hidden in the browser.
-    ::::
-
-    ::::u-page-card
-    ---
-    spotlight: true
-    class: col-span-2 lg:col-span-1
-    ---
-      :::::div{.flex.flex-1.items-center.justify-center.py-12}
-      :u-icon{name="i-lucide-cloud-upload" class="size-24 text-primary"}
-      :::::
-
-    #title
-    Uploads for real applications
-
-    #description
-    Native, temporary, resumable chunked, and direct-to-storage uploads, each resolved server-side and validated by Laravel.
-    ::::
-
-    ::::u-page-card
-    ---
-    spotlight: true
-    class: col-span-2 lg:col-span-1
-    ---
-      :::::div{.flex.flex-1.items-center.justify-center.py-12}
-      :u-icon{name="i-lucide-workflow" class="size-24 text-primary"}
-      :::::
-
-    #title
-    Collections and wizards
-
-    #description
-    Repeaters, typed blocks, and multi-step forms with stable nested paths, server-side step validation, and application-owned navigation.
-    ::::
-
-    ::::u-page-card
-    ---
-    spotlight: true
-    class: col-span-2
-    ---
-    ```ts [resources/js/components/form/index.ts]
-    export const { FormField, FormFields } = createFormRenderer({
-        renderers: {
-          Text: TextField,
-          Checkbox: CheckboxField,
-          File: FileField,
-        },
-    })
-    ```
-
-    #title
-    Behavior without package markup
-
-    #description
-    The schema describes what a field does. Your application decides its HTML, components, layout, accessibility, and visual states — the Vue engine emits no elements of its own.
-    ::::
-
-    ::::u-page-card
-    ---
-    spotlight: true
-    class: col-span-2 lg:col-span-1
-    ---
-      :::::div{.flex.flex-1.items-center.justify-center.py-12}
-      :u-icon{name="i-lucide-braces" class="size-24 text-primary"}
-      :::::
-
-    #title
-    Composables first
-
-    #description
-    Nested values and errors, dirty and touched state, debounced Precognition validation, conditional transitions, collection reordering, upload progress, and unsaved-navigation protection.
-    ::::
+        <Button
+          type="submit"
+          :disabled="!canSubmit || processing"
+        >
+          {{ processing ? 'Saving…' : 'Save profile' }}
+        </Button>
+      </Card>
+    </Form>
+  </template>
+  ```
   :::
 ::
 
@@ -301,10 +249,9 @@ Inertify Form is the package you can install today. Table and Modal are still in
   :::u-button
   ---
   color: primary
-  external: true
   icon: i-lucide-book-open
   size: xl
-  to: /form/
+  to: /form/getting-started/installation
   ---
   Read the documentation
   :::

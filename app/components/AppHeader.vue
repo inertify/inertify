@@ -1,10 +1,15 @@
 <script setup lang="ts">
-// The site is a single landing page, so the docs search button and content
-// navigation are replaced with section anchors.
+// Outside the documentation the site is a single landing page, so the docs
+// search button and content navigation are replaced with section anchors.
 const appConfig = useAppConfig()
+const route = useRoute()
 
 const links = computed(() => appConfig.navigation?.links || [])
 const githubUrl = computed(() => appConfig.github?.url)
+// Docus renders the search trigger in AppHeaderCenter, which this component
+// replaces, so documentation pages would otherwise only reach the search modal
+// through its ⌘K shortcut.
+const isDocsPage = computed(() => route.meta.layout === 'docs')
 </script>
 
 <template>
@@ -19,6 +24,8 @@ const githubUrl = computed(() => appConfig.github?.url)
     </template>
 
     <template #right>
+      <UContentSearchButton v-if="isDocsPage" />
+
       <ClientOnly>
         <UColorModeButton />
 

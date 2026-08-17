@@ -47,8 +47,7 @@ services:
         value: public, max-age=86400
 
     # Set so sitemap, canonical, Open Graph, and llms.txt URLs use the custom
-    # domain. Uncomment only after confirming it is not already set in the
-    # dashboard — a Blueprint value overwrites what is configured there.
-    # envVars:
+    # domain. This overwrites whatever is configured in the dashboard.
+    envVars:
       - key: NUXT_SITE_URL
         value: https://inertify.dev

@@ -1,0 +1,54 @@
+# Render Blueprint for the Inertify landing site.
+#
+# `name` must match the existing service in the Render dashboard exactly. Render
+# applies a Blueprint to a service of the same name, and creates a brand new one
+# (with a new onrender.com hostname) if the name does not match.
+services:
+  - name: inertify
+    type: web
+    runtime: static
+    buildCommand: npm install && npm run generate
+    # Relative to the repo root, not to rootDir.
+    staticPublishPath: ./.output/public
+
+    routes:
+      # /form is the Inertify Form docs, deployed as its own static service.
+      # Render's `*` matches from the position it appears in, so `/form/*` never
+      # matches a bare `/form` — without this redirect that path falls through
+      # to this site's filesystem and 404s.
+      - type: redirect
+        source: /form
+        destination: /form/
+
+      # The docs app is built with app.baseURL = '/form/', so its HTML already
+      # references /form/… while its files sit flat at the target's root. The
+      # proxy strips the prefix, which is why the destination has no /form.
+      - type: rewrite
+        source: /form/*
+        destination: https://form-k94j.onrender.com/*
+
+    headers:
+      # Render serves every static asset with `max-age=0` by default, so
+      # browsers cache nothing: fonts are re-fetched on each visit (text paints
+      # in the fallback, then reflows) and prefetched route chunks have to be
+      # revalidated before they can be used. These filenames are content-hashed,
+      # so they can be cached indefinitely.
+      - path: /_nuxt/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /_fonts/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+
+      # Unlike the two above, /_ipx URLs are not content-hashed — the path stays
+      # the same when the source image changes — so they must stay revalidatable.
+      - path: /_ipx/*
+        name: Cache-Control
+        value: public, max-age=86400
+
+    # Set so sitemap, canonical, Open Graph, and llms.txt URLs use the custom
+    # domain. Uncomment only after confirming it is not already set in the
+    # dashboard — a Blueprint value overwrites what is configured there.
+    # envVars:
+      - key: NUXT_SITE_URL
+        value: https://inertify.dev

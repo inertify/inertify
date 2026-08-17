@@ -44,7 +44,7 @@ export default defineAppConfig({
     // this mode that root becomes a section link above the sidebar instead, and
     // the sidebar shows the section's own tree — which is also how a second
     // package's documentation would slot in.
-    sub: 'aside',
+    sub: 'none',
 
     links: [
       { label: 'Packages', to: '/#packages' },

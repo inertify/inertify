@@ -32,7 +32,7 @@ export default defineAppConfig({
       // `/form` is served by the docs deployment through a Render rewrite, so
       // it is not a route in this app: `external` forces a document navigation
       // instead of a client-side one that would hit this app's 404.
-      { label: 'Inertify Form', to: '/form', external: true },
+      { label: 'Inertify Form', to: '/form/', external: true },
       { label: 'Approach', to: '#approach' },
     ],
   },
@@ -56,7 +56,7 @@ export default defineAppConfig({
         'Native, temporary, chunked, and direct uploads',
         'Renderless Vue engine with typed composables',
       ],
-      to: '/form',
+      to: '/form/',
     },
     {
       id: 'table',

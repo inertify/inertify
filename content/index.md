@@ -304,7 +304,7 @@ Inertify Form is the package you can install today. Table and Modal are still in
   external: true
   icon: i-lucide-book-open
   size: xl
-  to: /form
+  to: /form/
   ---
   Read the documentation
   :::

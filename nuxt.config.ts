@@ -16,7 +16,7 @@ export default defineNuxtConfig({
       // Docus crawls links while prerendering. `/form` belongs to the docs
       // deployment behind a rewrite, so crawling it here would only log a 404
       // for a route this app deliberately does not serve.
-      ignore: ['/form'],
+      ignore: ['/form', '/form/'],
     },
   },
 

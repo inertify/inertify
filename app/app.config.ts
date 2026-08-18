@@ -47,7 +47,7 @@ export default defineAppConfig({
     sub: 'none',
 
     links: [
-      { label: 'Packages', to: '/#packages' },
+      { label: 'Home', to: '/' },
       // The first documentation page rather than /form, which only exists as a
       // server-side redirect and would 404 on a client-side navigation.
       { label: 'Inertify Form', to: '/form/getting-started/installation' },
